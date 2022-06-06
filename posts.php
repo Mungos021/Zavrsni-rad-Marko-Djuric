@@ -39,9 +39,16 @@ $posts = fetch($sql, $connection, true);
                 <div class="blog-post">
                     <?php
                     foreach ($posts as $post) {
+                        $postId = $post['id'];
                     ?>
-                        <h2 class="blog-post-title"><a href="#"><?php echo $post['title']; ?> </a></h2>
-                        <p class="blog-post-meta"> <?php echo $post['created_at']; ?> <a href="#"> <?php echo $post['author'] ?> </a></p>
+                        <h2 class="blog-post-title">
+                            <!-- setujem ID posta u svaki link kako bih kasnije znao koji post cu prikazati -->
+                            <a href="single-post.php?post_id=<?php echo $postId ?>">
+                                <?php echo $post['title']; ?>
+                            </a>
+                        </h2>
+                        <p class="blog-post-meta"> <?php echo $post['created_at']; ?> by <a href="#"> <?php echo $post['author'] ?> </a>
+                        </p>
                         <p> <?php echo $post['body'] ?> </p>
 
                     <?php
