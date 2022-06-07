@@ -2,11 +2,13 @@
 
 include_once 'db.php';
 
-$sql = "SELECT * FROM posts AS p ORDER BY created_at DESC";
+$sql = "SELECT * FROM posts AS p
+INNER JOIN authors AS a
+ON p.author_id = a.id
+ORDER BY created_at DESC";
 $posts = fetch($sql, $connection, true);
 
 ?>
-
 
 <!doctype html>
 <html lang="en">
@@ -40,6 +42,7 @@ $posts = fetch($sql, $connection, true);
                     <?php
                     foreach ($posts as $post) {
                         $postId = $post['id'];
+                        $imeAutora = $post['ime'] . " " . $post['prezime'];
                     ?>
                         <h2 class="blog-post-title">
                             <!-- setujem ID posta u svaki link kako bih kasnije znao koji post cu prikazati -->
@@ -47,7 +50,7 @@ $posts = fetch($sql, $connection, true);
                                 <?php echo $post['title']; ?>
                             </a>
                         </h2>
-                        <p class="blog-post-meta"> <?php echo $post['created_at']; ?> by <a href="#"> <?php echo $post['author'] ?> </a>
+                        <p class="blog-post-meta"> <?php echo $post['created_at']; ?> by <a href="#"> <?php echo $imeAutora ?> </a>
                         </p>
                         <p> <?php echo $post['body'] ?> </p>
 

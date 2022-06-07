@@ -3,17 +3,22 @@
 include_once "db.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $autorId = $_POST['autor'];
     $title = $_POST['title'];
     $body = $_POST['body'];
     $createdAt = date('Y-m-d H:m');
 
-    $sql = "INSERT INTO posts (title, body, author, created_at)
-    VALUES ('$title', '$body', 'Marko', '$createdAt')";
+    //Upisujem novi post u DB
+    $sql = "INSERT INTO posts (title, body, author_id, created_at)
+    VALUES ('$title', '$body', '$autorId', '$createdAt')";
     $statement = $connection->prepare($sql);
     $statement->execute();
 
     header('Location:./posts.php');
 };
+
+$sql = "SELECT id, ime, prezime, pol, CONCAT(ime, ' ' , prezime) as punoIme FROM authors";
+$authors = fetch($sql, $connection, true);
 
 ?>
 
@@ -30,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <link href="styles/blog.css" rel="stylesheet">
     <link href="styles/styles.css" rel="stylesheet">
-    <title>Create post</title>
+    <title>Vivify Blog</title>
+
 </head>
 
 <body>
@@ -46,6 +52,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form method="post" action="create-post.php">
                     <div class="blog-post">
+                        <label for="autor"> Odaberite autora:</label>
+                        <select name="autor">
+
+                            <!-- Prolazim kroz niz autora dobavljenih iz baze i za svakog kreiram novi 'option' element unutar 'select' elementa -->
+                            <?php foreach ($authors as $author) {
+                                // za svakog autora odmah proveravam pol i prema tome dodeljujem novu vrednost u promenljivu $genderClass koja ce se koristiti za dinamicko dodeljivanje klase 'option' elementu
+                                // klasa se uspesno i tacno dodeljuje, ali za sada nisam uspeo da pregazim stil
+                                $author['pol'] === 'M' ? $genderClass = "male" : $genderClass = "female";
+                                $punoIme = $author['punoIme'];
+                                $authorId = $author['id']
+                            ?>
+
+                                <option class="<?php echo $genderClass ?>" value="<?php echo "$authorId" ?>"><?php echo $punoIme ?></option>
+
+                            <?php
+                            };
+                            ?>
+
+                        </select>
                         <label for="title">Title:</label>
                         <input type="text" placeholder="Enter title" name="title" required>
                         <label for="body">Content:</label>
