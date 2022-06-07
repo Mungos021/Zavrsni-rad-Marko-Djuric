@@ -5,8 +5,13 @@ include_once "db.php";
 $postId = $_GET['post_id'];
 
 //dovlacim samo post sa zadatim URL-om
-$sql = "SELECT * FROM posts WHERE id = $postId";
+$sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
+INNER JOIN authors AS a
+ON p.author_id = a.id
+WHERE p.id = $postId";
 $post = fetch($sql, $connection);
+
+$imeAutora = $post['ime'] . " " . $post['prezime'];
 
 //Dovlacim sve komentare vezane za ovaj post
 $sql = "SELECT * FROM comments AS c
@@ -45,8 +50,7 @@ $comments = fetch($sql, $connection, true);
             <div class="col-sm-8 blog-main">
                 <div class="blog-post">
                     <h2 class="blog-post-title"><?php echo $post['title'] ?></h2>
-                    <p class="blog-post-meta"><?php echo $post['created_at'] ?> by <a href="#"><?php echo $post['author'] ?></a></p>
-
+                    <p class="blog-post-meta"><?php echo $post['created_at'] ?> by <a href="#"><?php echo $imeAutora ?></a></p>
                     <p><?php echo $post['body'] ?></p>
                 </div>
                 <ul>

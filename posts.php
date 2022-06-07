@@ -2,7 +2,7 @@
 
 include_once 'db.php';
 
-$sql = "SELECT * FROM posts AS p
+$sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
 INNER JOIN authors AS a
 ON p.author_id = a.id
 ORDER BY created_at DESC";
