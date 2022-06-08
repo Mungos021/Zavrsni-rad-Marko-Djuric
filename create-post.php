@@ -52,8 +52,11 @@ $authors = fetch($sql, $connection, true);
 
                 <form method="post" action="create-post.php">
                     <div class="blog-post">
-                        <label for="autor"> Odaberite autora:</label>
+
                         <select name="autor">
+                            <option selected="selected">
+                                Odaberite autora:
+                            </option>
 
                             <!-- Prolazim kroz niz autora dobavljenih iz baze i za svakog kreiram novi 'option' element unutar 'select' elementa -->
                             <?php foreach ($authors as $author) {
@@ -63,13 +66,12 @@ $authors = fetch($sql, $connection, true);
                                 $punoIme = $author['punoIme'];
                                 $authorId = $author['id']
                             ?>
-
-                                <option class="<?php echo $genderClass ?>" value="<?php echo "$authorId" ?>"><?php echo $punoIme ?></option>
-
+                                <option class="<?php echo $genderClass ?>" value="<?php echo "$authorId" ?>">
+                                    <?php echo $punoIme ?>
+                                </option>
                             <?php
                             };
                             ?>
-
                         </select>
                         <label for="title">Title:</label>
                         <input type="text" placeholder="Enter title" name="title" required>

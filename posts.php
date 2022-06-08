@@ -2,11 +2,26 @@
 
 include_once 'db.php';
 
-$sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
-INNER JOIN authors AS a
-ON p.author_id = a.id
-ORDER BY created_at DESC";
-$posts = fetch($sql, $connection, true);
+$sql = "SELECT id, CONCAT(ime, ' ', prezime) AS punoIme FROM authors";
+$authors = fetch($sql, $connection, true);
+
+if (isset($_POST['autor'])) {
+    //koristim ID autora i iz DB dovlacim samo njegove postove i ispisujem ih na stranica
+    $authorId = ($_POST['autor']);
+
+    $sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
+            INNER JOIN authors AS a
+            ON p.author_id = a.id
+            WHERE a.id = $authorId";
+    $posts = fetch($sql, $connection, true);
+    //Ukoliko nije selektovan poseban autor iz dropdown menija, dovlacim sve postove i njih ispisujem na stranici
+} else if ($_POST['autor'] == 0) {
+    $sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
+            INNER JOIN authors AS a
+            ON p.author_id = a.id
+            ORDER BY created_at DESC";
+    $posts = fetch($sql, $connection, true);
+};
 
 ?>
 
@@ -38,6 +53,27 @@ $posts = fetch($sql, $connection, true);
     <main role="main" class="container">
         <div class="row">
             <div class="col-sm-8 blog-main">
+                <!-- filtriranje radi, ali uvek nakon selekta mi vraca na default vrednost (All authors) -->
+                <form method="post" id="authorFilter" action="<?php $_SERVER['PHP_SELF']; ?>">
+                    <!-- dobijam Id autora -->
+                    <select name="autor" onchange="document.getElementById('authorFilter').submit()">
+                        <option value="0" selected>
+                            All authors:
+                        </option>
+
+                        <?php foreach ($authors as $author) {
+                            $punoIme = $author['punoIme'];
+                            $authorId = $author['id']
+                        ?>
+                            <option value="<?php echo "$authorId" ?>">
+                                <?php echo $punoIme ?>
+                            </option>
+                        <?php
+                        };
+                        ?>
+                    </select>
+                </form>
+
                 <div class="blog-post">
                     <?php
                     foreach ($posts as $post) {
@@ -57,6 +93,7 @@ $posts = fetch($sql, $connection, true);
                     <?php
                     };
                     ?>
+
                 </div>
 
                 <nav class="blog-pagination">
