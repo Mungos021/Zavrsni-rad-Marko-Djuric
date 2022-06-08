@@ -4,8 +4,8 @@ include_once "db.php";
 //uzimam ID posta iz URL-a
 $postId = $_GET['post_id'];
 
-//dovlacim samo post sa zadatim URL-om
-$sql = "SELECT p.id, title, body, created_at, author_id, a.ime, a.prezime FROM posts AS p
+//dovlacim samo post sa ID-jem iz URL-a i join-ujem sa tabelom authors
+$sql = "SELECT p.id, p.title, p.body, p.created_at, p.author_id, a.ime, a.prezime, a.pol FROM posts AS p
 INNER JOIN authors AS a
 ON p.author_id = a.id
 WHERE p.id = $postId";
@@ -51,7 +51,14 @@ $comments = fetch($sql, $connection, true);
                 <div class="blog-post">
                     <h2 class="blog-post-title"><?php echo $post['title'] ?></h2>
                     <p class="blog-post-meta"><?php echo $post['created_at'] ?> by <a href="#"><?php echo $imeAutora ?></a></p>
-                    <p><?php echo $post['body'] ?></p>
+                    <?php
+                    // proveravam pol i dodeljujem vrednost varijabli i tu varijablu kasnije koristim da dodelim klasu elementu <p> u kojem ispisujem tekst posta
+                    $post['pol'] === 'M' ?
+                        $genderClass = 'male'
+                        : $genderClass = 'female';
+                    ?>
+                    <!-- dodeljujem klasu spram pola autor -->
+                    <p class="<?php echo $genderClass ?>"><?php echo $post['body'] ?></p>
                 </div>
                 <ul>
                     <?php
